@@ -23,7 +23,7 @@ world, and help foodbanks manage their stock, churches share their
 sermons, book-lovers catalogue their shelves, people pray for their
 neighbourhoods -- and whatever else.
 
-If you're a developer, then cloning this repo and get started:
+If you're a developer, then you can clone this repo and get started:
 
 ```
 git clone https://github.com/peterprescott/fullstack
@@ -39,8 +39,12 @@ interface at [localhost:8000](http://localhost:8000), and the other to
 run a back-end API at [localhost:5000](http://localhost:5000).
 
 While you're getting that working, you should also be able to find a
-working demo of the app [here](), with frontend hosted for free by
-[Netlify](https://netlify.com), backend hosted for free by
-[PythonAnywhere](https://pythonanywhere.com), and both immediately
-updated whenever new code is merged to the `master` branch of this
-[Github](https://github.com) repo.
+working demo of the app [here](https://frontend-ui.netlify.app/), with
+frontend hosted for free by [Netlify](https://netlify.com), backend
+hosted for free by [PythonAnywhere](https://pythonanywhere.com), and
+both immediately updated whenever new code is merged to the `master`
+branch of this [Github](https://github.com) repo.
+
+You can deploy your own fork of this to Netlify, just by clicking here:
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/peterprescott/fullstack)
