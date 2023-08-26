@@ -1,0 +1,15 @@
+[repo]
+github = "peterprescott/fullstack"
+
+[local]
+frontend_port = 8000
+frontend_folder = ["frontend", "ui"]
+backend_port = 5000
+
+[test]
+netlify = "testfrontendui"
+pythonanywhere = "testbackendapi"
+
+[production]
+netlify = "fullstackfrontendui"
+pythonanywhere = "fullstackbackendapi"

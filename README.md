@@ -28,7 +28,7 @@ If you're a developer, then you can clone this repo and get started:
 ```
 git clone https://github.com/peterprescott/fullstack
 cd fullstack
-conda create --name fs_env python=3.11
+conda create --name fs_env python=3.10
 conda activate fs_env
 pip install -e .
 python run.py

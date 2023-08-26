@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Run the frontend and backend servers in parallel.
 """
@@ -6,9 +7,12 @@ import multiprocessing
 import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
+import toml
 from api.api import app
 
 FRONTEND_FOLDER = os.path.join("frontend", "ui")
+FRONTEND_PORT = 8000
+BACKEND_PORT = 5000
 
 
 def serve_on_available_port(func: callable):
@@ -66,6 +70,7 @@ def serve_frontend(
     """
     server = create_server(site_folder, address, port)
     print(f"\nFrontend is live at https://{address}:{port}")
+    print(f"Serving files from {site_folder}")
     server.serve_forever()
 
 
@@ -79,11 +84,21 @@ def serve_backend(port=5000, address="localhost"):
 
 
 if __name__ == "__main__":
+    with open("fullstack.toml", "r") as f:
+        config = toml.load(f).get("local", {})
+        frontend_port = config.get("frontend_port") or FRONTEND_PORT
+        frontend_folder = (
+            os.path.join(*config.get("frontend_folder"))
+            or FRONTEND_FOLDER
+        )
+        backend_port = config.get("backend_port") or BACKEND_PORT
+
     frontend_process = multiprocessing.Process(
-        target=serve_frontend, kwargs={"port": 8000}
+        target=serve_frontend,
+        kwargs={"port": frontend_port, "site_folder": frontend_folder},
     )
     backend_process = multiprocessing.Process(
-        target=serve_backend, kwargs={"port": 5000}
+        target=serve_backend, kwargs={"port": backend_port}
     )
 
     frontend_process.start()

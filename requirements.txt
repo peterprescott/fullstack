@@ -1,0 +1,12 @@
+black
+flake8
+gitlint
+ipython
+isort
+pre-commit
+pylint
+pynvim
+pytest
+requests
+toml
+-e . # install package in editable mode

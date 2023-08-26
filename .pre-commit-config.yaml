@@ -1,0 +1,31 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+    -   id: black
+-   repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.9.3
+    hooks:
+    -   id: isort
+-   repo: https://github.com/pre-commit/mirrors-fixmyjs
+    rev: v2.0.0
+    hooks:
+    -   id: fixmyjs
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+          [
+            "-rn",
+          ]
