@@ -16,7 +16,8 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from time import time
 
 import toml
-from api.api import app
+
+from fullstack_api.app import app
 
 FRONTEND_FOLDER = os.path.join("frontend", "fullstack_ui")
 LOGS_FOLDER = "logs"
