@@ -5,6 +5,7 @@ Run the frontend and backend servers in parallel.
 
 import multiprocessing
 import os
+import socket
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 import toml
@@ -13,6 +14,20 @@ from api.api import app
 FRONTEND_FOLDER = os.path.join("frontend", "ui")
 FRONTEND_PORT = 8000
 BACKEND_PORT = 5000
+
+
+def is_port_busy(port):
+    """
+    Check if a port is busy.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(("localhost", port))
+        return False  # Port is available
+    except socket.error:
+        return True  # Port is already in use
+    finally:
+        sock.close()
 
 
 def serve_on_available_port(func: callable):
@@ -28,9 +43,10 @@ def serve_on_available_port(func: callable):
         )  # Default max_tries value
         i = 0
         while i < max_tries:
-            try:
+            if not is_port_busy(port):
+                kwargs["port"] = port
                 return func(*args, **kwargs)
-            except OSError:
+            else:
                 print(f"\nPort {port} is busy...")
                 port += 1
                 i += 1
@@ -84,7 +100,7 @@ def serve_backend(port=5000, address="localhost"):
 
 
 if __name__ == "__main__":
-    with open("fullstack.toml", "r") as f:
+    with open("fullstack.toml", "r", encoding="utf-8") as f:
         config = toml.load(f).get("local", {})
         frontend_port = config.get("frontend_port") or FRONTEND_PORT
         frontend_folder = (
