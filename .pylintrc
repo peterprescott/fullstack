@@ -1,5 +1,6 @@
 [FORMAT]
-good-names=df,e # df for Dataframe; e for Exception
+good-names=df,e,i
+# df for Dataframe; e for Exception, i for incremental counter
 
 [MESSAGES CONTROL]
 disable = no-else-return

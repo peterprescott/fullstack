@@ -3,20 +3,126 @@
 Run the frontend and backend servers in parallel.
 """
 
+import io
 import multiprocessing
 import os
+import re
 import socket
+import sys
+import unicodedata
+from datetime import datetime
+from functools import wraps
 from http.server import HTTPServer, SimpleHTTPRequestHandler
+from time import time
 
 import toml
 from api.api import app
 
 FRONTEND_FOLDER = os.path.join("frontend", "ui")
+LOGS_FOLDER = "logs"
 FRONTEND_PORT = 8000
 BACKEND_PORT = 5000
 
 
-def is_port_busy(port):
+def create_logs_folder():
+    """
+    Create the logs folder if it does not exist.
+    """
+    if not os.path.exists(LOGS_FOLDER):
+        os.mkdir(LOGS_FOLDER)
+
+
+def print_info(func_name):
+    """
+    Print information about the current process.
+    """
+    print("\n")
+    print("time:", datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f"))
+    print("func name:", func_name)
+    print("parent process:", os.getppid())
+    print("process id:", os.getpid())
+    print("\n")
+
+
+class CustomStdout(io.TextIOWrapper):
+    """
+    Allows writing to a log file, while echoing to stdout.
+    """
+
+    def __init__(self, stdout, output_list):
+        super().__init__(
+            stdout.buffer,
+            stdout.encoding,
+            stdout.errors,
+            stdout.newlines,
+            stdout.line_buffering,
+        )
+        self.output_list = output_list
+        self.stdout = stdout
+
+    def write(self, text):
+        self.output_list.append(text)
+        self.stdout.write(text)
+        self.flush()
+
+
+def strip_ansi_codes(str_input: str):
+    """
+    Strip ANSI codes from a string.
+    cf. https://stackoverflow.com/questions/13506033/filtering-out-ansi-escape-sequences
+    """
+    return re.sub(
+        r"\x1b\[([0-9,A-Z]{1,2}(;[0-9]{1,2})?(;[0-9]{3})?)?[m|K]?",
+        "",
+        str_input,
+    )
+
+
+def log_stdout(func: callable):
+    """
+    Wrapper for sys.stdout.write to write to a log file.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        create_logs_folder()
+        marker = "-" * 20 + "\n"
+        logs = []
+        logs.append(marker)
+        original_stdout = sys.stdout
+        original_stderr = sys.stderr
+        sys.stdout = CustomStdout(original_stdout, logs)
+        sys.stderr = CustomStdout(original_stderr, logs)
+        print_info(func.__name__)
+        start_time = time()
+        func(*args, **kwargs)
+        end_time = time()
+        run_time = end_time - start_time
+        print(
+            f"\n\n{func.__name__} runtime: {run_time:.2f} seconds\n{marker}\n"
+        )
+        with open(
+            os.path.join(LOGS_FOLDER, "logs.txt"),
+            "a",
+            encoding="ascii",
+        ) as logfile:
+            for item in logs:
+                if isinstance(item, bytes):
+                    item = item.decode("utf-8")
+                unicode_normalized_item = unicodedata.normalize(
+                    "NFKD", item
+                ).encode("ascii", "ignore")
+                try:
+                    logfile.write(strip_ansi_codes(item))
+                except TypeError:
+                    logfile.write(
+                        unicode_normalized_item.decode("ascii")
+                    )
+
+    return wrapper
+
+
+def is_port_busy(port: int):
     """
     Check if a port is busy.
     """
@@ -36,6 +142,7 @@ def serve_on_available_port(func: callable):
     port until it succeeds or the max_tries limit is reached.
     """
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         port = kwargs.get("port", 8000)  # Default port value
         max_tries = kwargs.get(
@@ -77,6 +184,7 @@ def create_server(site_folder: str, address: str, port: int):
     return HTTPServer((address, port), Handler)
 
 
+@log_stdout
 @serve_on_available_port
 def serve_frontend(
     site_folder=FRONTEND_FOLDER, port=8000, address="localhost"
@@ -85,21 +193,29 @@ def serve_frontend(
     Serve the frontend on the given port.
     """
     server = create_server(site_folder, address, port)
-    print(f"\nFrontend is live at https://{address}:{port}")
-    print(f"Serving files from {site_folder}")
-    server.serve_forever()
+    print(
+        f"\nFrontend is live at https://{address}:{port}\n"
+        f"Serving files from {site_folder}\n\n"
+    )
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nKeyboard interrupt received, exiting.")
+        server.server_close()
 
 
+@log_stdout
 @serve_on_available_port
 def serve_backend(port=5000, address="localhost"):
     """
     Serve the backend on the given port.
     """
-    print(f"\nBackend is live at https://{address}:{port}")
+    print(f"\nBackend is live at https://{address}:{port}\n\n")
     app.run(host=address, port=port)
 
 
 if __name__ == "__main__":
+    print("\nLaunching fullstack app...\n")
     with open("fullstack.toml", "r", encoding="utf-8") as f:
         config = toml.load(f).get("local", {})
         frontend_port = config.get("frontend_port") or FRONTEND_PORT
