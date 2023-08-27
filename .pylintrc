@@ -1,2 +1,5 @@
+[FORMAT]
+good-names=df,e # df for Dataframe; e for Exception
+
 [MESSAGES CONTROL]
 disable = no-else-return
