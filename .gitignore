@@ -1,8 +1,12 @@
 .env
+data
+logs
+tmp
+
+# Javascript
 node_modules
 package-lock.json
+
+# Python
 __pycache__
 *egg-info
-logs
-.sqlite.db
-tmp
