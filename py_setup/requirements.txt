@@ -3,6 +3,7 @@ flake8
 gitlint
 ipython
 isort
+pandas
 pre-commit
 pylint
 pynvim

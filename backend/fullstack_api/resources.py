@@ -1,13 +1,72 @@
+"""
+This module contains the resources for the API. Resources are the
+HTTP endpoints that the API exposes. They are the interface between
+the API and the outside world.
+
+Since Resource classes correspond to HTTP resources, and their class
+methods (get, post, put, delete) correspond to HTTP methods, we can
+disable the pylint warnings for missing docstrings.
+"""
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+
 from flask import request
-from flask_praetorian import auth_required, roles_required
+from flask_praetorian import Praetorian, auth_required, roles_required
 from flask_restful import Api, Resource
 
-from fullstack_api.models import db
+from fullstack_api.models import User, db
+
+guard = Praetorian()
 
 
 class HelloWorld(Resource):
     def get(self):
         return {"message": "Hello, World!"}
+
+
+class Signup(Resource):
+    def post(self):
+        req = request.get_json(force=True)
+        username = req.get("username", None)
+        password = req.get("password", None)
+        email = req.get("email", None)
+
+        if username and password:
+            new_user = User(
+                username=username,
+                hashed_password=guard.hash_password(password),
+                email=email,
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            user = guard.authenticate(username, password)
+            access_token = guard.encode_jwt_token(user)
+            ret = {
+                "access_token": access_token,
+                "message": "Signup successful",
+            }
+            return ret, 200
+        else:
+            return {"message": "Invalid input"}, 400
+
+
+class Login(Resource):
+    def post(self):
+        req = request.get_json(force=True)
+        username = req.get("username", None)
+        password = req.get("password", None)
+
+        user = guard.authenticate(username, password)
+        if user:
+            access_token = guard.encode_jwt_token(user)
+            ret = {
+                "access_token": access_token,
+                "message": "Login successful",
+            }
+            return ret, 200
+        else:
+            return {"message": "Invalid credentials"}, 401
 
 
 def generate_dynamic_resource(model: db.Model) -> (Resource, Resource):
@@ -57,9 +116,7 @@ def generate_dynamic_resource(model: db.Model) -> (Resource, Resource):
     # Generate a unique class name
     class_name = f"Generated{model.__name__}Resource"
     dynamic_resource_class = type(class_name, (DynamicResource,), {})
-    dynamic_list_resource_class = type(
-        class_name + "List", (DynamicListResource,), {}
-    )
+    dynamic_list_resource_class = type(class_name + "List", (DynamicListResource,), {})
     return dynamic_resource_class, dynamic_list_resource_class
 
 
