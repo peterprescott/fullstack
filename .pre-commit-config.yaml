@@ -18,6 +18,16 @@ repos:
     rev: v2.0.0
     hooks:
     -   id: fixmyjs
+-   repo: https://github.com/thibaudcolas/pre-commit-stylelint
+    rev: v14.4.0
+    hooks:
+      - id: stylelint
+        args: [--fix]
+        additional_dependencies:
+          # stylelint itself needs to be here when using additional_dependencies.
+          - stylelint@15.10.3
+          - stylelint-config-standard@34.0.0
+          - stylelint-config-concentric-order
 -   repo: local
     hooks:
     -   id: pylint

@@ -69,7 +69,7 @@ class CustomStdout(io.TextIOWrapper):
         if isinstance(text, bytes):
             text = text.decode("utf-8")
         text = text.strip()
-        text = trim_long_lines(text, 72)
+        text = trim_long_lines(text, 90)
         if text:
             self.output_list.append(f"{text}\n")
             self.stdout.write(f"\n>>> {self.label} >>>\n{text}\n")
