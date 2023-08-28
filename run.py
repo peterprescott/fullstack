@@ -18,7 +18,7 @@ from time import time
 import toml
 from api.api import app
 
-FRONTEND_FOLDER = os.path.join("frontend", "ui")
+FRONTEND_FOLDER = os.path.join("frontend", "fullstack_ui")
 LOGS_FOLDER = "logs"
 FRONTEND_PORT = 8000
 BACKEND_PORT = 5000
@@ -36,12 +36,13 @@ def print_info(func_name):
     """
     Print information about the current process.
     """
-    print("\n")
-    print("time:", datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f"))
-    print("func name:", func_name)
-    print("parent process:", os.getppid())
-    print("process id:", os.getpid())
-    print("\n")
+    print(
+        text_marker("#", 50)
+        + f"time: {datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')}\n"
+        f"func name: {func_name}\n"
+        f"parent process: {os.getppid()}\n"
+        f"process id: {os.getpid()}\n" + text_marker("#", 50)
+    )
 
 
 class CustomStdout(io.TextIOWrapper):
@@ -49,7 +50,9 @@ class CustomStdout(io.TextIOWrapper):
     Allows writing to a log file, while echoing to stdout.
     """
 
-    def __init__(self, stdout, output_list):
+    def __init__(
+        self, stdout: io.TextIOWrapper, output_list: list, label: str
+    ):
         super().__init__(
             stdout.buffer,
             stdout.encoding,
@@ -59,10 +62,16 @@ class CustomStdout(io.TextIOWrapper):
         )
         self.output_list = output_list
         self.stdout = stdout
+        self.label = label
 
-    def write(self, text):
-        self.output_list.append(text)
-        self.stdout.write(text)
+    def write(self, text: str):
+        if isinstance(text, bytes):
+            text = text.decode("utf-8")
+        text = text.strip()
+        text = trim_long_lines(text, 72)
+        if text:
+            self.output_list.append(f"{text}\n")
+            self.stdout.write(f"\n>>> {self.label} >>>\n{text}\n")
         self.flush()
 
 
@@ -78,6 +87,44 @@ def strip_ansi_codes(str_input: str):
     )
 
 
+def text_marker(symbol: str, length: int):
+    """
+    Create a text marker.
+    """
+    return symbol * length + "\n"
+
+
+def trim_long_lines(text, max_length):
+    """
+    Trim long lines in the text without splitting words.
+
+    Args:
+        text (str): The input text.
+        max_length (int): The maximum length for a line.
+
+    Returns:
+        str: The text with trimmed lines.
+    """
+    lines = text.split("\n")
+    trimmed_lines = []
+
+    for line in lines:
+        words = line.split()
+        current_line = ""
+
+        for word in words:
+            if len(current_line) + len(word) + 1 <= max_length:
+                current_line += word + " "
+            else:
+                trimmed_lines.append(current_line.strip())
+                current_line = word + " "
+
+        if current_line:
+            trimmed_lines.append(current_line.strip())
+
+    return "\n".join(trimmed_lines)
+
+
 def log_stdout(func: callable):
     """
     Wrapper for sys.stdout.write to write to a log file.
@@ -85,22 +132,24 @@ def log_stdout(func: callable):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
+        funcname = func.__name__
         create_logs_folder()
-        marker = "-" * 20 + "\n"
-        logs = []
-        logs.append(marker)
+        logs = ["\n", text_marker("~", 50)]
         original_stdout = sys.stdout
         original_stderr = sys.stderr
-        sys.stdout = CustomStdout(original_stdout, logs)
-        sys.stderr = CustomStdout(original_stderr, logs)
-        print_info(func.__name__)
+        sys.stdout = CustomStdout(original_stdout, logs, funcname)
+        sys.stderr = CustomStdout(original_stderr, logs, funcname)
+        print_info(funcname)
         start_time = time()
         func(*args, **kwargs)
         end_time = time()
         run_time = end_time - start_time
         print(
-            f"\n\n{func.__name__} runtime: {run_time:.2f} seconds\n{marker}\n"
+            text_marker("#", 50)
+            + f"{func.__name__} runtime: {run_time:.2f}seconds\n"
+            + text_marker("#", 50)
         )
+        logs.append(text_marker("~", 50))
         with open(
             os.path.join(LOGS_FOLDER, "logs.txt"),
             "a",
@@ -186,7 +235,7 @@ def create_server(site_folder: str, address: str, port: int):
 
 @log_stdout
 @serve_on_available_port
-def serve_frontend(
+def frontend(
     site_folder=FRONTEND_FOLDER, port=8000, address="localhost"
 ):
     """
@@ -200,22 +249,22 @@ def serve_frontend(
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt received, exiting.")
+        print("Keyboard interrupt received, exiting.")
         server.server_close()
 
 
 @log_stdout
 @serve_on_available_port
-def serve_backend(port=5000, address="localhost"):
+def backend(port=5000, address="localhost"):
     """
     Serve the backend on the given port.
     """
-    print(f"\nBackend is live at https://{address}:{port}\n\n")
+    print(f"Backend is live at https://{address}:{port}")
     app.run(host=address, port=port)
 
 
 if __name__ == "__main__":
-    print("\nLaunching fullstack app...\n")
+    print("Launching fullstack app server...")
     with open("fullstack.toml", "r", encoding="utf-8") as f:
         config = toml.load(f).get("local", {})
         frontend_port = config.get("frontend_port") or FRONTEND_PORT
@@ -226,11 +275,11 @@ if __name__ == "__main__":
         backend_port = config.get("backend_port") or BACKEND_PORT
 
     frontend_process = multiprocessing.Process(
-        target=serve_frontend,
+        target=frontend,
         kwargs={"port": frontend_port, "site_folder": frontend_folder},
     )
     backend_process = multiprocessing.Process(
-        target=serve_backend, kwargs={"port": backend_port}
+        target=backend, kwargs={"port": backend_port}
     )
 
     frontend_process.start()

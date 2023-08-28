@@ -3,7 +3,7 @@ github = "peterprescott/fullstack"
 
 [local]
 frontend_port = 8000
-frontend_folder = ["frontend", "ui"]
+frontend_folder = ["frontend", "fullstack_ui"]
 backend_port = 5000
 
 [test]
