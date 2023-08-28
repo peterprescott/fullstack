@@ -108,6 +108,7 @@ nav h1 {
   background-color: var(--off-white);
   padding: 10px;
   width: 350px;
+  max-width: 90%;
 }
 
 #auth-form input {
