@@ -1,2 +1,3 @@
 [build]
-  publish = "frontend/ui"
+command = "echo 'None required'"
+publish = "frontend/fullstack_ui"

@@ -11,7 +11,7 @@ A **full-stack** web application includes:
 Even a simple app therefore involves several technological pieces:
 
 - HTML, CSS, and Javascript for the front-end;
-- a programming language of your choice (let's choose [Python](https://xkcd.com/353/)) for the backend; 
+- a programming language of your choice (let's choose [Python](https://xkcd.com/353/)) for the backend;
 - SQL for the database;
 - some Bash to get everything in place and running on its system;
 - and Git for version control.
@@ -30,7 +30,9 @@ git clone https://github.com/peterprescott/fullstack
 cd fullstack
 conda create --name fs_env python=3.10
 conda activate fs_env
-pip install -e .
+cd py_setup
+pip install -r requirements.txt
+cd ..
 python run.py
 ```
 
