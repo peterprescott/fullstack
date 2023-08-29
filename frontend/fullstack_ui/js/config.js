@@ -3,6 +3,8 @@ console.log('config.js loading...');
 var API_URL = '';
 var context = '';
 
+var launchApp = launchDataManager;
+
 if (window.location.hostname === 'localhost') {
   API_URL = 'http://localhost:5000/';
   context = 'local';

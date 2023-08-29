@@ -13,7 +13,7 @@ from flask_restful import Api
 
 import fullstack_api.resources as rsrc
 from fullstack_api.config import Config, default_users
-from fullstack_api.models import User, db
+from fullstack_api.models import Book, Task, User, db
 from fullstack_api.utils import hash_and_drop_password
 
 
@@ -45,7 +45,8 @@ api.add_resource(rsrc.Signup, "/signup")
 api.add_resource(rsrc.Login, "/login")
 api.add_resource(rsrc.Schema, "/schemas")
 rsrc.add_dynamic_resources(api, User)
-
+rsrc.add_dynamic_resources(api, Task)
+rsrc.add_dynamic_resources(api, Book)
 
 # check if table user is empty
 with app.app_context():

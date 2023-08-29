@@ -10,6 +10,10 @@ overlay.style.display = "none";
 
 function alert(message) {
   popUp(message);
+  msgFooter(message);
+  if (context === "local") {
+    rickRoll();
+  }
 }
 
 function popUp(message) {

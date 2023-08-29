@@ -1,10 +1,57 @@
 """
 This file contains the models for the database.
 """
+# pylint: disable=too-few-public-methods
 
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+class Task(db.Model):
+    """
+    Task model for the To Do List.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+    done = db.Column(db.Boolean, default=False, server_default="false")
+
+    def serialize(self):
+        """
+        Returns a JSON-serializable representation of the Task.
+        """
+        return {
+            "id": self.id,
+            "description": self.description,
+            "done": self.done,
+        }
+
+
+class Book(db.Model):
+    """
+    Book model for the Book List.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    author = db.Column(db.String(255), nullable=False)
+    publisher = db.Column(db.String(255), nullable=False)
+    isbn = db.Column(db.String(255), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+
+    def serialize(self):
+        """
+        Returns a JSON-serializable representation of the Book.
+        """
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "publisher": self.publisher,
+            "isbn": self.isbn,
+            "year": self.year,
+        }
 
 
 class User(db.Model):

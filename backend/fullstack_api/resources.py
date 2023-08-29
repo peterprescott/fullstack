@@ -98,7 +98,7 @@ class Schema(Resource):
                             "serialized": column.name in serialized,
                         }
                     )
-                schemas[model.__tablename__] = columns
+                schemas[f"{model.__name__.lower()}s"] = columns
         return schemas
 
 

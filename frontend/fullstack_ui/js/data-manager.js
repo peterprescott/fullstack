@@ -1,3 +1,8 @@
+/* Data management operations for all resources */
+
+console.log('data-manager.js loading...');
+
+let schemas = {};
 
 function createInputField(type, id, value, width) {
   const input = document.createElement('input');
@@ -13,7 +18,7 @@ function createEditButton(id, resourceName) {
   editButton.className = 'edit-button';
   editButton.innerText = `Edit`;
   editButton.id = `${resourceName}-${id}`;
-  editButton.onclick = function() { editResource(`${this.id}`) };
+  editButton.onclick = function() { editResourceButtonClick(`${this.id}`) };
   return editButton;
  }
 
@@ -22,7 +27,7 @@ function createDeleteButton(id, resourceName) {
   deleteButton.className = 'delete-button';
   deleteButton.innerText = 'Delete';
   deleteButton.id = `${resourceName}-${id}`;
-  deleteButton.onclick = function() { deleteResource(`${this.id}`) };
+  deleteButton.onclick = function() { deleteResourceButtonClick(`${this.id}`) };
   return deleteButton;
  }
 
@@ -31,7 +36,7 @@ function createAddButton(resourceName) {
   addButton.className = 'add-button';
   addButton.innerText = 'Add';
   addButton.id = `${resourceName}-add`;
-  addButton.onclick = function() { addResource(`${resourceName}`) };
+  addButton.onclick = function() { addResourceButtonClick(`${resourceName}`) };
   addButton.style.textAlign = 'center';
   addButton.style.width = '100%';
   return addButton;
@@ -42,7 +47,7 @@ function createSaveButton(id, resourceName) {
   saveButton.className = 'save-button';
   saveButton.innerText = 'Save';
   saveButton.id = `${resourceName}-${id}`;
-  saveButton.onclick = function() { saveResource(`${this.id}`) };
+  saveButton.onclick = function() { saveResourceButtonClick(`${this.id}`) };
   return saveButton;
 }
 
@@ -50,7 +55,7 @@ async function loadResource() {
   const dropdownMenu = document.getElementById('dropdown-menu');
   resourceName = dropdownMenu.value;
   if (resourceName !== '') {
-    const resources = await getResource(resourceName);
+    const resources = await getResources(resourceName);
     makeTable(resourceName, resources);
   }
 }
@@ -64,7 +69,24 @@ function removeTable(resourceName) {
   dropdownMenu.value = '';
 }
 
-function makeTable(resourceName, resources) {
+async function getSchemas() {
+  const token = localStorage.getItem('token');
+  const url = `${API_URL}/schemas`;
+  return await get(url, token);
+}
+
+function translateType(type) {
+  apiTypes = {
+    'INTEGER': 'number',
+    'TEXT': 'text',
+    'BOOLEAN': 'checkbox'
+  };
+  return sqliteTypes[type];
+}
+
+async function makeTable(resourceName, resources) {
+  schemas = await getSchemas();
+  resourceSchema = schemas[resourceName];
   removeTable(resourceName);
   const tableDiv = document.createElement('div');
   tableDiv.id = `${resourceName}-table-div`;
@@ -82,12 +104,14 @@ function makeTable(resourceName, resources) {
   const tbody = document.createElement('tbody');
   const tr = document.createElement('tr');
   const th = document.createElement('th');
-  // make table header with keys from first object in resources array
-  for (const key in resources[0]) {
-    const th = document.createElement('th');
-    th.innerText = key;
-    tr.appendChild(th);
-  }
+  // make table header with names from resourceSchema
+  resourceSchema.forEach(column => {
+    if (column.serialized) {
+      const th = document.createElement('th');
+      th.innerText = column.name;
+      tr.appendChild(th);
+    }
+  });
   // add edit and delete buttons to table header
   const editTh = document.createElement('th');
   tr.appendChild(editTh);
@@ -130,15 +154,19 @@ function makeTable(resourceName, resources) {
     // add row to table body with input fields for adding new resource
     const trNew = document.createElement('tr');
     trNew.id = `${resourceName}-add-row`;
-    for (const key in resources[0]) {
-      const td = document.createElement('td');
-      td.id = `add-${resourceName}-${key}-cell`;
-      if (key !== 'id') {
-        const input = createInputField('text', `add-${resourceName}-${key}`, '', '12ch');
-        td.appendChild(input);
+    // for (const key in resources[0]) {
+    resourceSchema.forEach(column => {
+      if (column.serialized) {
+        key = column.name;
+        const td = document.createElement('td');
+        td.id = `add-${resourceName}-${key}-cell`;
+        if (key !== 'id') {
+          const input = createInputField('text', `add-${resourceName}-${key}`, '', '12ch');
+          td.appendChild(input);
+        }
+        trNew.appendChild(td);
       }
-      trNew.appendChild(td);
-    }
+    });
     // add add button to table body
     const addTd = document.createElement('td');
     addTd.colSpan = 2;
@@ -154,7 +182,7 @@ function makeTable(resourceName, resources) {
     appendBody(tableDiv);
 }
 
-async function addResource(resourceName) {
+async function addResourceButtonClick(resourceName) {
   row = document.getElementById(`${resourceName}-add-row`);
   cells = row.childNodes;
   data = {};
@@ -169,36 +197,13 @@ async function addResource(resourceName) {
     }
     data[key] = value;
   }
-  // add resource to database
-  token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${apiURL}${resourceName}`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data),
-    });
-    if (response.ok) {
-      alert(`Resource ${resourceName} added!`);
-      const resource_id = await response.json().resource_id;
-    } else {
-      alert(`${response.status} ${response.statusText}`);
-    }
-  } catch (error) {
-    alert(`${error}`);
-  }
-  // add row to table body with added resource
-  try {
-    const resources = await getResource(resourceName);
-    makeTable(resourceName, resources);
-  } catch (error) {
-    alert(`${error}`);
-  }
+  createResource(resourceName, data);
+  removeTable(resourceName);
+  resources = await getResources(resourceName);
+  makeTable(resourceName, resources);
 }
 
-async function saveResource(label) {
+async function saveResourceButtonClick(label) {
   resourceName = label.split('-')[0];
   id = label.split('-')[1];
   cells = document.getElementsByClassName(`${resourceName}-${id}-cell`);
@@ -220,30 +225,11 @@ async function saveResource(label) {
   editButtonCell.innerHTML = '';
   const editButton = createEditButton(id, resourceName);
   editButtonCell.appendChild(editButton);
-  // save resource to database
-  token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${apiURL}${resourceName}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      alert(`Resource ${resourceName}-${id} saved!`);
-    } else {
-      alert(`${response.status} ${response.statusText}`);
-    }
-  } catch (error) {
-    alert(`${error}`);
-  }
+  updateResource(resourceName, id, data);
 }
 
 
-function editResource(label) {
+function editResourceButtonClick(label) {
   resourceName = label.split('-')[0];
   id = label.split('-')[1];
   cells = document.getElementsByClassName(`${resourceName}-${id}-cell`);
@@ -263,86 +249,46 @@ function editResource(label) {
 
 }
 
-async function deleteResource(label) {
+async function deleteResourceButtonClick(label) {
   resource = label.split('-')[0];
   id = label.split('-')[1];
   // delete row from table
   const row = document.getElementById(`${resource}-${id}-row`);
   row.remove();
   // delete resource from database
-  token = localStorage.getItem('token');
-  try {
-    const response = await fetch(`${apiURL}${resource}/${id}`, {
-    method: 'DELETE',
-    headers: {
-         'Authorization': `Bearer ${token}`
-        }
-    });
-    if (response.ok) {
-      const data = await response.json();
-      alert(`Resource ${resource}-${id} deleted!`);
-    } else {
-      alert(`${response.status} ${response.statusText}`);
-    }
-  } catch (error) {
-      alert(`${error}`);
-  }
-}
-
-async function getResource(resource) {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(
-      `${apiURL}${resource}`,
-      {
-        method : 'GET',
-        headers : {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      alert(`${response.status} ${response.statusText}`);
-    }
-  } catch (error) {
-    alert(`${error}`);
-  }
+  deleteResource(resource, id);
 }
 
 async function addDropdownMenu() {
-  try {
-    const response = await fetch(`${apiURL}`);
-    if (response.ok) {
-      const data = await response.json();
-      const resources = data.resources;
-      const dropdownContainer = document.createElement('div');
-      dropdownContainer.id = 'dropdown-container';
-      const dropdownMenu = document.createElement('select');
-      dropdownMenu.id = 'dropdown-menu';
-      dropdownMenu.onchange = loadResource;
-      const dropdownLabel = document.createElement('label');
-      dropdownLabel.for = 'dropdown-menu';
-      dropdownLabel.innerText = 'Select a resource:';
-      dropdownContainer.appendChild(dropdownLabel);
-      dropdownContainer.appendChild(dropdownMenu);
-      resources.unshift('');
-      resources.forEach(resource => {
-        const option = document.createElement('option');
-        option.value = resource;
-        option.innerText = resource;
-        dropdownMenu.appendChild(option);
-      });
-      appendBody(dropdownContainer);
-    } else {
-      alert(`
-        Error: \n\n Failed to fetch API resources list.
-        \n\n ${response.status} ${response.statusText}
-        `);
-    }
-  } catch (error) {
-      alert(`${error}`);
-  }
+  const dropdownContainer = document.createElement('div');
+  dropdownContainer.id = 'dropdown-container';
+  const dropdownMenu = document.createElement('select');
+  dropdownMenu.id = 'dropdown-menu';
+  dropdownMenu.onchange = loadResource;
+  const dropdownLabel = document.createElement('label');
+  dropdownLabel.for = 'dropdown-menu';
+  dropdownLabel.innerText = 'Select a resource:\n';
+  dropdownContainer.appendChild(dropdownLabel);
+  dropdownContainer.appendChild(dropdownMenu);
+  let resources = [''];
+  resourceSchema = await getSchemas();
+  Object.keys(resourceSchema).forEach(key => {
+    resources.push(key);
+  });
+
+  resources.forEach(resource => {
+    const option = document.createElement('option');
+    option.value = resource;
+    option.innerText = resource;
+    dropdownMenu.appendChild(option);
+  });
+  appendBody(dropdownContainer);
 }
+
+function launchDataManager() {
+  clearBody();
+  addDropdownMenu();
+}
+
+
+console.log('data-manager.js loaded!');

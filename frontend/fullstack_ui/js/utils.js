@@ -19,9 +19,6 @@ async function fetchWithErrorHandling(url = '', config = {}) {
 function handleError(error) {
   console.log(error);
   alert(error.stack);
-  if (context === "local") {
-    rickRoll();
-  }
 }
 
 async function get(url, token) {

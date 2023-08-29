@@ -76,14 +76,9 @@ passwordConfirmInput.addEventListener('keyup', function(event) {
 
 function welcome(username) {
   msgHeader(`Welcome, ${username}!`);
-  launchButton = document.createElement('button');
-  launchButton.innerText = 'Launch';
-  launchButton.onclick = addDropdownMenu;
-  clearBody();
-  appendBody(launchButton);
   authForm.style.display = 'none';
+  launchApp();
 }
-
 
 async function authRequest() {
   if (usernameInput.value === '') {
@@ -110,10 +105,20 @@ async function authRequest() {
   } else if (endpoint === 'signup') {
     data = await signup(usernameInput.value, emailInput.value, passwordInput.value);
   }
+  if (data.message.includes('successful')) {
+    onSuccessfulAuth(data);
+  }
+}
+
+function onSuccessfulAuth(data) {
+  msgFooter(data.message);
   localStorage.setItem('token', data.access_token);
   localStorage.setItem('username', usernameInput.value);
-  localStorage.setItem('roles', data.roles);
+  localStorage.setItem('user_roles', data.roles);
   welcome(usernameInput.value);
+  authTopButton.innerText = usernameInput.value;
+  renderSignoutForm();
+  authForm.style.display = 'none';
 }
 
 function signout() {
