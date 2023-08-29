@@ -1,21 +1,30 @@
 /* Styling for Fullstack Frontend */
 
 :root {
-  --dark-color: #343434;
-  --button-color: #0056b3;
-  --off-white: #faf5f4;
-  --green: #090;
-  --red: #900;
+  --charcoal: #343434;
+
+  /* --blue: #0056b3; */
+  --blue: #008cba;
+  --whitish: #faf5f4;
+  --green: #4caf50;
+  --red: #f44336;
 }
 
 body {
   margin: 0;
-  background-color: var(--off-white);
+  background-color: var(--whitish);
   font-family: Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
+}
+
+button {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px;
 }
 
 button:hover {
@@ -32,7 +41,7 @@ nav {
   top: 0;
   left: 0;
   align-items: center;
-  background-color: var(--dark-color);
+  background-color: var(--charcoal);
   padding: 10px;
   width: 100%;
   height: 35px;
@@ -41,18 +50,40 @@ nav {
 
 nav h1 {
   margin: 0;
-  color: var(--off-white);
+  color: var(--whitish);
   font-size: 30px;
   font-weight: 650;
 }
 
 /* End Navbar Styling */
 
+/* Footer Styling */
+
+footer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--charcoal);
+  padding: 10px;
+  width: 100%;
+  height: 25px;
+  overflow: hidden;
+}
+
+footer span, footer a {
+  margin: 0;
+  color: var(--whitish);
+  font-size: 15px;
+}
+
+/* End Footer Styling */
 
 /* App Styling */
 
 #app {
-  display: flex;
   position: absolute;
   top: 60px;
   left: 0;
@@ -61,7 +92,95 @@ nav h1 {
   height: 80%;
 }
 
+#app-header {
+  padding-top: 30px;
+  width: 100%;
+  text-align: center;
+  color: var(--blue);
+  font-size: 30px;
+}
+
+#app-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+#app-footer {
+  position: fixed;
+  bottom: 60px;
+  align-items: center;
+  border-top: 1px solid #ccc;
+  width: 100%;
+  height: 30px;
+  text-align: center;
+}
+
 /* End App Styling */
+
+/* CRUD Styling */
+
+
+.table-div {
+  justify-content: center;
+  margin: 50px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  max-width: 800px;
+  overflow-x: auto;
+}
+
+.table-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+table {
+  margin: 0 auto;
+  padding: 10px;
+  width: 100%;
+  width: max-content;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+td {
+  border-top: 1px solid var(--charcoal);
+  border-right: 0;
+  border-left: 0;
+  padding: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+tr:nth-child(even) {
+  background-color: #d2d2d2;
+}
+
+
+.add-button {
+  background-color: var(--green);
+}
+
+.edit-button {
+  background-color: var(--blue);
+  max-width: 8ch;
+}
+
+.save-button {
+  background-color: var(--green);
+  width: 8ch;
+}
+
+.delete-button {
+  background-color: var(--red);
+}
+
+/* End CRUD Styling */
 
 
 /*
@@ -82,7 +201,7 @@ nav h1 {
   flex-shrink: 0;
   margin-right: 20px;
   border-radius: 50%;
-  background-color: var(--off-white);
+  background-color: var(--whitish);
   padding: 5px;
   width: 30px;
   height: 30px;
@@ -93,14 +212,14 @@ nav h1 {
 #auth-top-button {
   border: none;
   border-radius: 4px;
-  background-color: var(--off-white);
+  background-color: var(--whitish);
   cursor: pointer;
   padding: 8px;
   padding-right: 20px;
   padding-left: 20px;
   width: 200px;
   vertical-align: middle;
-  color: var(--nav-color);
+  color: var(--charcoal);
   font-size: 20px;
 }
 
@@ -112,7 +231,7 @@ nav h1 {
   z-index: 1000;
   border-radius: 5px;
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
-  background-color: var(--off-white);
+  background-color: var(--whitish);
   padding: 10px;
   width: 350px;
   max-width: 90%;
@@ -132,11 +251,11 @@ nav h1 {
   margin: 15px auto;
   border: none;
   border-radius: 4px;
-  background-color: var(--button-color);
+  background-color: var(--blue);
   cursor: pointer;
   padding: 10px;
   width: 100%;
-  color: var(--off-white);
+  color: var(--whitish);
   font-size: 18px;
 }
 
@@ -149,7 +268,7 @@ nav h1 {
 #auth-form-toggle {
   cursor: pointer;
   text-decoration: underline;
-  color: var(--button-color);
+  color: var(--blue);
 }
 
 #auth-form-toggle:hover {
@@ -178,7 +297,7 @@ nav h1 {
 #popup {
   border-radius: 5px;
   box-shadow: 0 0 10px rgb(0 0 0 / 30%);
-  background-color: var(--off-white);
+  background-color: var(--whitish);
   padding: 20px;
   width: 400px;
   max-width: 90%;
@@ -189,11 +308,11 @@ nav h1 {
   margin: 15px auto;
   border: none;
   border-radius: 4px;
-  background-color: var(--button-color);
+  background-color: var(--blue);
   cursor: pointer;
   padding: 10px;
   width: 100%;
-  color: var(--off-white);
+  color: var(--whitish);
   font-size: 18px;
 }
 

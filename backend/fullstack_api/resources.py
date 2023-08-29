@@ -21,7 +21,10 @@ guard = Praetorian()
 
 class HelloWorld(Resource):
     def get(self):
-        return {"message": "Hello, World!"}
+        return {
+            "message": "Hello, World!",
+            "resources": ["users", "tasks"],
+        }
 
 
 class Signup(Resource):
@@ -45,6 +48,7 @@ class Signup(Resource):
             ret = {
                 "access_token": access_token,
                 "message": "Signup successful",
+                "roles": user.roles,
             }
             return ret, 200
         else:
@@ -63,6 +67,7 @@ class Login(Resource):
             ret = {
                 "access_token": access_token,
                 "message": "Login successful",
+                "roles": user.roles,
             }
             return ret, 200
         else:

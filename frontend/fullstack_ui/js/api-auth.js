@@ -75,11 +75,12 @@ passwordConfirmInput.addEventListener('keyup', function(event) {
 
 
 function welcome(username) {
-  app.innerHTML = '';
-  const welcomeMessage = document.createElement('h1');
-  welcomeMessage.id = 'welcome-message';
-  welcomeMessage.innerText = `Welcome, ${username}!`;
-  app.appendChild(welcomeMessage);
+  msgHeader(`Welcome, ${username}!`);
+  launchButton = document.createElement('button');
+  launchButton.innerText = 'Launch';
+  launchButton.onclick = addDropdownMenu;
+  clearBody();
+  appendBody(launchButton);
 }
 
 
@@ -137,7 +138,12 @@ async function authRequest() {
 }
 
 function signout() {
-  app.innerHTML = '';
+  msgHeader('See you soon!');
+  msgFooter('');
+  clearBody();
+  confirmation = document.createElement('p');
+  confirmation.innerText = 'You have been signed out.';
+  appendBody(confirmation);
 	localStorage.removeItem('token');
 	localStorage.removeItem('username');
   usernameInput.value = '';
