@@ -105,34 +105,32 @@ class Schema(Resource):
 
 
 class Git(Resource):
+    repo = Repo(os.path.dirname(__file__), search_parent_directories=True)
+
     @auth_required
     def get(self):
-        repo = Repo(search_parent_directories=True)
         return {
-            "active_branch": repo.active_branch.name,
-            "commit": str(repo.head.commit),
+            "active_branch": self.repo.active_branch.name,
+            "commit": str(self.repo.head.commit),
         }
 
     @roles_required("dev")
     def post(self):
-        repo = Repo(search_parent_directories=True)
-        repo.remotes.origin.pull()
+        self.repo.remotes.origin.pull()
         os.system("touch /var/www/*wsgi.py")
         return {"message": "Branch pulled successfully"}
 
     @roles_required("dev")
     def put(self):
         req = request.get_json(force=True)
-        repo = Repo(search_parent_directories=True)
-        repo.git.checkout(req.get("branch"))
+        self.repo.git.checkout(req.get("branch"))
         return {"message": "Branch switched successfully"}
 
     @roles_required("dev")
     def delete(self):
         req = request.get_json(force=True)
-        repo = Repo(search_parent_directories=True)
-        repo.git.checkout(req.get("branch"))
-        repo.git.reset("--hard", "HEAD~1")
+        self.repo.git.checkout(req.get("branch"))
+        self.repo.git.reset("--hard", "HEAD~1")
         return {"message": "Branch reset successfully"}
 
 
