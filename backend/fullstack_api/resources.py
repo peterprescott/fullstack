@@ -10,9 +10,12 @@ disable the pylint warnings for missing docstrings.
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
+import os
+
 from flask import request
 from flask_praetorian import Praetorian, auth_required, roles_required
 from flask_restful import Api, Resource
+from git import Repo
 from sqlalchemy import inspect
 
 from fullstack_api.models import User, db
@@ -24,7 +27,6 @@ class HelloWorld(Resource):
     def get(self):
         return {
             "message": "Hello, World!",
-            "resources": ["users", "tasks"],
         }
 
 
@@ -100,6 +102,38 @@ class Schema(Resource):
                     )
                 schemas[f"{model.__name__.lower()}s"] = columns
         return schemas
+
+
+class Git(Resource):
+    @auth_required
+    def get(self):
+        repo = Repo(search_parent_directories=True)
+        return {
+            "active_branch": repo.active_branch.name,
+            "commit": str(repo.head.commit),
+        }
+
+    @roles_required("dev")
+    def post(self):
+        repo = Repo(search_parent_directories=True)
+        repo.remotes.origin.pull()
+        os.system("touch /var/www/*wsgi.py")
+        return {"message": "Branch pulled successfully"}
+
+    @roles_required("dev")
+    def put(self):
+        req = request.get_json(force=True)
+        repo = Repo(search_parent_directories=True)
+        repo.git.checkout(req.get("branch"))
+        return {"message": "Branch switched successfully"}
+
+    @roles_required("dev")
+    def delete(self):
+        req = request.get_json(force=True)
+        repo = Repo(search_parent_directories=True)
+        repo.git.checkout(req.get("branch"))
+        repo.git.reset("--hard", "HEAD~1")
+        return {"message": "Branch reset successfully"}
 
 
 def generate_dynamic_resource(model: db.Model) -> (Resource, Resource):
