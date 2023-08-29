@@ -4,9 +4,6 @@ registers the resources. It also checks if the user table is empty and
 if so, adds the default users.
 """
 
-import os
-
-from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
@@ -23,13 +20,11 @@ class UnchangedSecretKey(Exception):
     pass
 
 
-load_dotenv()
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 if app.config["SECRET_KEY"] == "your_secret_key":
     raise UnchangedSecretKey(
-        "\n\nThis app will not run unless you change the SECRET_KEY in backend/.env"
+        "\n\nThis app will not run unless you change the SECRET_KEY"
     )
 
 db.init_app(app)
