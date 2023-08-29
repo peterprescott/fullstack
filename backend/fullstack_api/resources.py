@@ -27,6 +27,9 @@ class HelloWorld(Resource):
     def get(self):
         return {
             "message": "Hello, World!",
+            "active": Repo(
+                os.path.dirname(__file__), search_parent_directories=True
+            ).active_branch.name,
         }
 
 
