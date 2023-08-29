@@ -1,3 +1,5 @@
+/* API Authentication */
+
 console.log('api-auth.js loading...');
 
 const authIcon = document.getElementById('auth-icon');
@@ -11,8 +13,6 @@ const authButton = document.getElementById('auth-button');
 const authFormToggle = document.getElementById('auth-form-toggle');
 
 const authTopButtonDefaultText = 'Log In / Sign Up';
-
-
 
 
 function authFormToggleHTML(mode) {
@@ -81,6 +81,7 @@ function welcome(username) {
   launchButton.onclick = addDropdownMenu;
   clearBody();
   appendBody(launchButton);
+  authForm.style.display = 'none';
 }
 
 
@@ -104,37 +105,15 @@ async function authRequest() {
 			return;
 		}
 	}
-	let url = `${apiURL}${endpoint}`;
-	let postingData = {
-		username: usernameInput.value,
-		password: passwordInput.value,
-	};
-	if (endpoint === 'signup') {
-		postingData.email = emailInput.value;
-	}
-	try {
-	  const response = await fetch(url, {
-	    method: 'POST',
-	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(postingData),
-	  });
-
-	  if (response.ok) {
-	    const data = await response.json();
-	    localStorage.setItem('token', data.access_token);
-	    localStorage.setItem('username', postingData.username);
-      localStorage.setItem('user_roles', data.roles);
-	    authTopButton.innerText = postingData.username;
-	    toggleAuthForm();
-	    renderSignoutForm();
-      welcome(postingData.username);
-	  } else {
-	    const errorData = await response.json();
-	    alert(`Authentication failed.\n\n ${response.status} ${response.statusText}`);
-	  }
-	} catch (error) {
-	  alert(`Authentication failed.\n\n ${error}`);
+  if (endpoint === 'login') {
+    data = await login(usernameInput.value, passwordInput.value, endpoint);
+  } else if (endpoint === 'signup') {
+    data = await signup(usernameInput.value, emailInput.value, passwordInput.value);
   }
+  localStorage.setItem('token', data.access_token);
+  localStorage.setItem('username', usernameInput.value);
+  localStorage.setItem('roles', data.roles);
+  welcome(usernameInput.value);
 }
 
 function signout() {
