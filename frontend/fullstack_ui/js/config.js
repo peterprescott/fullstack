@@ -10,7 +10,7 @@ if (window.location.hostname === 'localhost') {
   context = 'local';
   console.log('Running locally...');
 } else if (window.location.hostname.includes('test')) {
-  API_URL = 'https://testbackendapi.pythonanywhere.com/';
+  API_URL = 'https://fullstackfullstack.pythonanywhere.com/';
   context = 'test';
   console.log('Running on test server...');
 }
