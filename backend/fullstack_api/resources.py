@@ -13,6 +13,7 @@ disable the pylint warnings for missing docstrings.
 from flask import request
 from flask_praetorian import Praetorian, auth_required, roles_required
 from flask_restful import Api, Resource
+from sqlalchemy import inspect
 
 from fullstack_api.models import User, db
 
@@ -72,6 +73,33 @@ class Login(Resource):
             return ret, 200
         else:
             return {"message": "Invalid credentials"}, 401
+
+
+class Schema(Resource):
+    @auth_required
+    def get(self):
+        schemas = {}
+        # get list of all models from db
+        registry = db.Model.registry._class_registry  # pylint: disable=protected-access
+        for model_cls in registry.keys():
+            if model_cls[0] != "_":
+                model = registry[model_cls]
+                serialized = model().serialize()
+                # get list of all columns from model
+                columns = []
+                for column in inspect(model).columns:
+                    columns.append(
+                        {
+                            "name": column.name,
+                            "type": str(column.type),
+                            "nullable": column.nullable,
+                            "default": str(column.default),
+                            "primary_key": column.primary_key,
+                            "serialized": column.name in serialized,
+                        }
+                    )
+                schemas[model.__tablename__] = columns
+        return schemas
 
 
 def generate_dynamic_resource(model: db.Model) -> (Resource, Resource):

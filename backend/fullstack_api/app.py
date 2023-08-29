@@ -31,18 +31,20 @@ if app.config["SECRET_KEY"] == "your_secret_key":
     raise UnchangedSecretKey(
         "\n\nThis app will not run unless you change the SECRET_KEY in backend/.env"
     )
+
 db.init_app(app)
+engine = db.create_engine(Config.SQLALCHEMY_DATABASE_URI)
+db.metadata.create_all(engine)
 rsrc.guard.init_app(app, User)
 cors = CORS()
 cors.init_app(app)
+
 api = Api(app)
 api.add_resource(rsrc.HelloWorld, "/")
 api.add_resource(rsrc.Signup, "/signup")
 api.add_resource(rsrc.Login, "/login")
+api.add_resource(rsrc.Schema, "/schemas")
 rsrc.add_dynamic_resources(api, User)
-
-engine = db.create_engine(Config.SQLALCHEMY_DATABASE_URI)
-db.metadata.create_all(engine)
 
 
 # check if table user is empty
