@@ -26,7 +26,21 @@ guard = Praetorian()
 class HelloWorld(Resource):
     def get(self):
         return {
-            "message": "Hello, World!",
+            "message": "Hello World!",
+            "origin": Repo(
+                os.path.dirname(__file__),
+                search_parent_directories=True,
+            ).remotes.origin.url,
+            "branch": Repo(
+                os.path.dirname(__file__),
+                search_parent_directories=True,
+            ).active_branch.name,
+            "updated": str(
+                Repo(
+                    os.path.dirname(__file__),
+                    search_parent_directories=True,
+                ).head.commit.committed_datetime
+            ),
         }
 
 
@@ -82,7 +96,9 @@ class Schema(Resource):
     def get(self):
         schemas = {}
         # get list of all models from db
-        registry = db.Model.registry._class_registry  # pylint: disable=protected-access
+        registry = (
+            db.Model.registry._class_registry
+        )  # pylint: disable=protected-access
         for model_cls in registry.keys():
             if model_cls[0] != "_":
                 model = registry[model_cls]
@@ -105,7 +121,9 @@ class Schema(Resource):
 
 
 class Git(Resource):
-    repo = Repo(os.path.dirname(__file__), search_parent_directories=True)
+    repo = Repo(
+        os.path.dirname(__file__), search_parent_directories=True
+    )
 
     @auth_required
     def get(self):
@@ -114,7 +132,7 @@ class Git(Resource):
             "commit": str(self.repo.head.commit),
         }
 
-    @roles_required("dev")
+    # @roles_required("dev")
     def post(self):
         self.repo.remotes.origin.pull()
         os.system("touch /var/www/*wsgi.py")
@@ -181,7 +199,9 @@ def generate_dynamic_resource(model: db.Model) -> (Resource, Resource):
     # Generate a unique class name
     class_name = f"Generated{model.__name__}Resource"
     dynamic_resource_class = type(class_name, (DynamicResource,), {})
-    dynamic_list_resource_class = type(class_name + "List", (DynamicListResource,), {})
+    dynamic_list_resource_class = type(
+        class_name + "List", (DynamicListResource,), {}
+    )
     return dynamic_resource_class, dynamic_list_resource_class
 
 
