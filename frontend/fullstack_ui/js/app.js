@@ -32,6 +32,7 @@ function resizeBody() {
   const footerHeight = footer.offsetHeight;
   const appBodyHeight = window.innerHeight - appHeaderHeight - appFooterHeight - navBarHeight - footerHeight;
   appBody.style.minHeight = appBodyHeight + 'px';
+  appBody.style.paddingBottom = appFooterHeight + footerHeight + 'px';
 }
 
 function addLaunchButton() {
