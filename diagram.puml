@@ -1,0 +1,26 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(dev, Developer)
+Person(user, User)
+
+
+System_Boundary(fullstack_app, "Fullstack App") {
+    Container(spa, "Frontend UI", "Vanilla Javascript, HTML, CSS", "Hosted on Netlify")
+    Container(backend_api, "Backend API", "Python, Flask", "Hosted on PythonAnywhere")
+    ContainerDb(database, "Database", "SQLite Database", "Single file within PythonAnywhere userspace")
+}
+
+System_Ext(github, "GitHub", "Git Code Repository")
+
+Rel(user, spa, "Opens web page", "HTTPS")
+Rel(dev, github, "Pulls/pushes code", "git")
+Rel(spa, backend_api, "Authenticated Access", "async, JSON/HTTPS")
+Rel_Neighbor(backend_api, database, "Reads from and writes to", "SQLAlchemy")
+
+Rel_Neighbor(github, spa, "Triggers Netlify redeployment", "CI/CD")
+Rel_Neighbor(github, backend_api, "Webhook triggers PythonAnywhere pull from repo", "CI/CD")
+Rel(fullstack_app, github, "Fullstack app code hosted in git monorepo")
+Rel_Neighbor(dev, fullstack_app, "Develops app locally", "run.py")
+@enduml

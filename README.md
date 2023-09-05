@@ -1,5 +1,7 @@
 # fullstack
 
+## Description
+
 A **full-stack** web application includes:
 
 - a front-end user interface;
@@ -23,6 +25,12 @@ world, and help foodbanks manage their stock, churches share their
 sermons, book-lovers catalogue their shelves, people pray for their
 neighbourhoods -- and whatever else.
 
+## Diagram
+
+![Fullstack App Container Diagram](diagram.svg)
+
+## Development
+
 If you're a developer, then you can clone this repo and get started:
 
 ```
@@ -40,11 +48,13 @@ That run script should set up two threads: one to serve a front-end user
 interface at [localhost:8000](http://localhost:8000), and the other to
 run a back-end API at [localhost:5000](http://localhost:5000).
 
+## Deployment
+
 While you're getting that working, you should also be able to find a
 working demo of the app [here](https://fullstack.me.uk/), with
 frontend hosted for free by [Netlify](https://netlify.com), backend
 hosted for free by [PythonAnywhere](https://pythonanywhere.com), and
-both immediately updated whenever new code is merged to the `master`
+both immediately updated whenever new code is merged to the `main`
 branch of this [Github](https://github.com) repo.
 
 You can deploy your own fork of this to Netlify, just by clicking here:
