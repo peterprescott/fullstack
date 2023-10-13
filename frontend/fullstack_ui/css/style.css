@@ -113,6 +113,11 @@ footer span, footer a {
   overflow: auto;
 }
 
+#app-image {
+  display: flex;
+  width: 90%;
+}
+
 #app-footer {
   position: fixed;
   bottom: 45px;
