@@ -37,7 +37,10 @@
         ></button>
       </div>
     </nav>
-    <div id="auth-form" class="flex z-100 gap-2 p-3 !right-8 flex-col !bg-neutral-100 w-[200px] rounded">
+    <div
+      id="auth-form"
+      class="flex z-100 gap-2 p-3 !right-8 flex-col !bg-neutral-100 w-[200px] rounded"
+    >
       <input
         class="tw-border tw-border-gray-400 p-2 rounded"
         id="username-input"
@@ -81,18 +84,30 @@
 
     <!-- This is the main app -->
 
-    <div id="app-header" class="flex flex-row gap-2 absolute top-20 left-16 z-[1000]">
-      <input
-        id="postcode-input"
-        type="text"
-        name="postcode"
-        placeholder="Enter your postcode"
-        class="rounded p-2"
-      />
-      <button class="bg-blue-300 hover:bg-blue-400 rounded px-1" onclick="getPostcodeCoords()">Submit</button>
-      <button id="boundary-button" onclick="loadBoundaries()">
-        Boundaries
-      </button>
+    <div
+      id="app-header"
+      class="flex flex-col gap-2 absolute top-20 left-16 z-[1000]"
+    >
+      <div class="flex flex-row gap-2 z-[1000]">
+        <input
+          id="postcode-input"
+          type="text"
+          name="postcode"
+          placeholder="Enter your postcode"
+          class="rounded p-2"
+          onsubmit="getPostcodeCoords()"
+        />
+        <button
+          class="bg-blue-300 hover:bg-blue-400 rounded px-1"
+          onclick="getPostcodeCoords()"
+        >
+          Submit
+        </button>
+      </div>
+      <label class="flex flex-row gap-2">
+        <input type="checkbox" id="show-boundaries" onchange="toggleBoundaries()" />
+        Show boundaries
+      </label>
     </div>
     <div id="map" class="flex grow relative"></div>
     <div class="h-20 flex justify-center items-center">
