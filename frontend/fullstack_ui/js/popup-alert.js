@@ -12,7 +12,7 @@ function alert(message) {
   popUp(message);
   msgFooter(message);
   if (context === "local") {
-    rickRoll();
+    // rickRoll();
   }
 }
 

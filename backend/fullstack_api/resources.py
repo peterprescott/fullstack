@@ -12,12 +12,15 @@ disable the pylint warnings for missing docstrings.
 
 import os
 
+import pandas as pd
 from flask import request
 from flask_praetorian import Praetorian, auth_required, roles_required
 from flask_restful import Api, Resource
 from git import Repo
 from sqlalchemy import inspect
+from sqlalchemy.exc import OperationalError
 
+from fullstack_api.config import data_dir
 from fullstack_api.models import User, db
 
 guard = Praetorian()
@@ -28,11 +31,21 @@ class Postcode(Resource):
         postcode = "".join(
             [char.upper() for char in postcode_str if str.isalnum(char)]
         )
-        data = db.session.execute(
-            db.text(
-                f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
+        try:
+            data = db.session.execute(
+                db.text(
+                    f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
+                )
+            ).fetchone()
+        except OperationalError:
+            postcode_csv = pd.read_csv(
+                data_dir / "latlon.csv.gz",
+                index_col=None,
             )
-        ).fetchone()
+            postcode_csv.to_sql(
+                "postcode",
+                db.engine,
+            )
         if data:
             return {
                 "success": True,
