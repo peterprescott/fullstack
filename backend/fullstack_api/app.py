@@ -40,6 +40,7 @@ api.add_resource(rsrc.Signup, "/signup")
 api.add_resource(rsrc.Login, "/login")
 api.add_resource(rsrc.Schema, "/schemas")
 api.add_resource(rsrc.Git, "/git")
+api.add_resource(rsrc.Postcode, "/postcode/<string:postcode_str>")
 rsrc.add_dynamic_resources(api, User)
 rsrc.add_dynamic_resources(api, Task)
 rsrc.add_dynamic_resources(api, Book)
@@ -47,7 +48,9 @@ rsrc.add_dynamic_resources(api, Book)
 # check if table user is empty
 with app.app_context():
     # count users
-    user_count = db.session.execute(db.text("select count(*) from user")).scalar()
+    user_count = db.session.execute(
+        db.text("select count(*) from user")
+    ).scalar()
     if user_count == 0:
         for user in default_users:
             db.session.add(User(**hash_and_drop_password(user)))

@@ -32,6 +32,18 @@ button:hover {
 }
 
 /*
+ * Map Styling
+ */
+
+#map {
+  position: absolute;
+  top: 100px;
+  z-index: 1;
+  width: 100%;
+  height: 300px;
+}
+
+/*
  * Navbar Styling
  */
 

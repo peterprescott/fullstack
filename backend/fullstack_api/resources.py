@@ -23,6 +23,31 @@ from fullstack_api.models import User, db
 guard = Praetorian()
 
 
+class Postcode(Resource):
+    def get(self, postcode_str):
+        postcode = "".join(
+            [char.upper() for char in postcode_str if str.isalnum(char)]
+        )
+        data = db.session.execute(
+            db.text(
+                f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
+            )
+        ).fetchone()
+        if data:
+            return {
+                "success": True,
+                "postcode": data.postcode,
+                "latitude": data.latitude,
+                "longitude": data.longitude,
+            }
+        else:
+            return {
+                "success": False,
+                "postcode": postcode_str,
+                "message": "Postcode not found",
+            }
+
+
 class HelloWorld(Resource):
     def get(self):
         return {
