@@ -34,6 +34,7 @@ def clean_postcode(postcode_str: str) -> str:
 
 
 def get_postcode(postcode: str) -> dict:
+    print(postcode)
     data = db.session.execute(
         db.text(
             f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
@@ -52,7 +53,9 @@ def get_postcode(postcode: str) -> dict:
 class Churches(Resource):
     def get(self, postcode_str):
         postcode = clean_postcode(postcode_str)
+        print(postcode_str)
         postcode = get_postcode(postcode)["postcode"]
+        print(postcode)
         churches = pd.read_csv(data_dir / "church_dc.csv")
         postcode_district_churches = churches[
             churches["postcode"].apply(lambda x: str(x).split(" ")[0])
@@ -90,11 +93,17 @@ class Postcode(Resource):
             ).fetchone()
 
         if data:
+            print(data)
             return {
                 "success": True,
                 "postcode": data.postcode,
                 "latitude": data.latitude,
                 "longitude": data.longitude,
+                "income_score": data.income_score,
+                "employment_score": data.employment_score,
+                "education_score": data.education_score,
+                "health_score": data.health_score,
+                "crime_score": data.crime_score
             }
         else:
             return {
