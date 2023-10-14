@@ -103,7 +103,7 @@ class Postcode(Resource):
                 "employment_score": data.employment_score,
                 "education_score": data.education_score,
                 "health_score": data.health_score,
-                "crime_score": data.crime_score
+                "crime_score": data.crime_score,
             }
         else:
             return {

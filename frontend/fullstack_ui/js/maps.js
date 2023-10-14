@@ -6,8 +6,9 @@ async function getPostcodeCoords() {
   churches = await get(API_URL + 'churches/' + postcode);
   count_churches = churches.length;
   church_msg = 'There are ' + count_churches + ' churches in ' +
-		churches[0].postcode.split(' ')[0] + '.';
+		churches[0].postcode.split(' ')[0] + '.<br>';
   msgFooter(church_msg)
+
 
   churches.forEach(c => markChurch(c));
 
