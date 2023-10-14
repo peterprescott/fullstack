@@ -17,12 +17,14 @@ function alert(message) {
 }
 
 function popUp(message) {
+    mapDiv.style.zIndex = "-1";
     popupMessage.innerText = message;
     overlay.style.display = "flex";
     popupButton.focus();
 }
 
 function closePopUp() {
+    mapDiv.style.zIndex = "1";
     overlay.style.display = "none";
 }
 
