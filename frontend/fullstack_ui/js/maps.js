@@ -114,7 +114,7 @@ map.on("drag", (e) => {
   map.panInsideBounds(ukBounds, { animate: false });
 });
 
-map.on("dragend", (e) => {
+map.on("moveend", (e) => {
   localStorage.setItem("location", JSON.stringify(map.getCenter()));
 });
 map.on("zoomend", (e) => {
