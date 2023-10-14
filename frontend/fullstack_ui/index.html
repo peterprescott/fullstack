@@ -1,92 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fullstack App</title>
-     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" href="/img/stack.svg">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/img/stack.svg" />
   </head>
-  <body>
 
+  <body class="flex flex-col h-screen min-h-screen">
     <!-- Authentication -->
-      <nav id="navbar" class="navbar">
-        <div id="app-name">
-          <h1>Fullstack App</h1>
-        </div>
-        <div id="auth-div" onclick=toggleAuthForm()>
-          <img id="auth-icon" src="/img/auth-icon.svg">
-          <button id="auth-top-button"> </button>
-        </div>
-        </nav>
-      <div id="auth-form">
-        <input id="username-input" type="text" name="username" placeholder="Username">
-        <input id="email-input" type="email" name="email" placeholder="Email">
-        <input id="password-input" type="password" name="password" placeholder="Password">
-        <input id="password-confirm-input" type="password" name="password-confirm" placeholder="Confirm Password">
-        <button id="auth-button" onclick=authRequest()>Signup</button>
-        <span id="auth-form-toggle">
-          <a onclick=renderLoginForm()>Switch to Login form</a>
-        </span>
+    <nav
+      class="flex relative flex-row gap-4 bg-neutral-800 h-16 py-4 items-center w-full overflow-hidden justify-between px-8"
+    >
+      <h1 class="flex text-white">CAP Map</h1>
+      <div class="flex flex-row gap-2 items-center" onclick="toggleAuthForm()">
+        <img
+          class="rounded-full flex-shrink-0 w-8 p-1 h-8 cursor-pointer bg-white"
+          src="/img/auth-icon.svg"
+        />
+        <button
+          id="auth-top-button"
+          class="bg-white w-[200px] py-2 px-4 rounded cursor-pointer"
+        ></button>
       </div>
+    </nav>
+    <div id="auth-form" class="flex z-100 gap-2 p-3 !right-8 flex-col !bg-neutral-100 w-[200px] rounded">
+      <input
+        class="tw-border tw-border-gray-400 p-2 rounded"
+        id="username-input"
+        type="text"
+        name="username"
+        placeholder="Username"
+      />
+      <input
+        class="tw-border tw-border-gray-400 p-2 rounded"
+        id="email-input"
+        type="email"
+        name="email"
+        placeholder="Email"
+      />
+      <input
+        class="tw-border tw-border-gray-400 p-2 rounded"
+        id="password-input"
+        type="password"
+        name="password"
+        placeholder="Password"
+      />
+      <input
+        class="tw-border tw-border-gray-400 p-2 rounded"
+        id="password-confirm-input"
+        type="password"
+        name="password-confirm"
+        placeholder="Confirm Password"
+      />
+      <button
+        class="bg-blue-300 hover:bg-blue-400 rounded p-2"
+        id="auth-button"
+        onclick="authRequest()"
+      >
+        Signup
+      </button>
+      <span id="auth-form-toggle" class="cursor-pointer">
+        <a onclick="renderLoginForm()">Switch to Login form</a>
+      </span>
+    </div>
     <!-- End of Authentication -->
-
 
     <!-- This is the main app -->
 
-      <div id="app">
-        <div id="app-header">
-	<input id="postcode-input" type="text" name="postcode"
-					placeholder="Enter your postcode">
-	<button id="postcode-button" onclick=getPostcodeCoords()>Submit</button>
-
-        </div>
-        <div id="app-body">
-	<div id="map"></div>
-        </div>
-        <div id="app-footer">
-          <p>...</p>
-        </div>
-      </div>
+    <div id="app-header" class="flex flex-row gap-2 absolute top-20 left-16 z-[1000]">
+      <input
+        id="postcode-input"
+        type="text"
+        name="postcode"
+        placeholder="Enter your postcode"
+        class="rounded p-2"
+      />
+      <button class="bg-blue-300 hover:bg-blue-400 rounded px-1" onclick="getPostcodeCoords()">Submit</button>
+      <button id="boundary-button" onclick="loadBoundaries()">
+        Boundaries
+      </button>
+    </div>
+    <div id="map" class="flex grow relative"></div>
+    <div class="h-20 flex justify-center items-center">
+      <p>...</p>
+    </div>
     <!-- End of main app -->
 
     <!-- This is for the popup alert -->
-      <div class="overlay" id="overlay">
-          <div id="popup">
-              <p id="popup-message"></p>
-              <button id="popup-button" onclick=closePopUp()>OK</button>
-          </div>
+    <div class="overlay" id="overlay">
+      <div id="popup" class="!bg-white">
+        <p id="popup-message"></p>
+        <button id="popup-button" onclick="closePopUp()">OK</button>
       </div>
+    </div>
     <!-- End of popup alert section -->
 
-    <!-- Footer -->
-      <footer id="footer">
-        <span>
-          <a href="https://github.com/peterprescott/fullstack/">
-            You can clone the code</a>.
-        </span>
-      </footer>
-    <!-- End of footer -->
-
     <!-- Load the JavaScript files -->
-      <div>
-        <script src="/js/utils.js"></script>
-        <script src="/js/app.js"></script>
-        <script src="/js/popup-alert.js"></script>
-        <script src="/js/api-auth.js"></script>
-	<script src="/js/maps.js"></script>
-        <script src="/js/data-manager.js"></script>
-        <script src="/js/config.js"></script>
-        <script>
-          resizeBody();
-        </script>
-      </div>
+    <div>
+      <script src="/js/utils.js"></script>
+      <script src="/js/app.js"></script>
+      <script src="/js/popup-alert.js"></script>
+      <script src="/js/api-auth.js"></script>
+      <script src="/js/maps.js"></script>
+      <script src="/js/data-manager.js"></script>
+      <script src="/js/config.js"></script>
+      <script>
+        resizeBody();
+      </script>
+    </div>
     <!-- End of JavaScript files -->
   </body>
 </html>

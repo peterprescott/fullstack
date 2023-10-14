@@ -42,6 +42,20 @@ async function post(url, token, body) {
   return fetchWithErrorHandling(url, config);
 }
 
+
+async function getBoundaries() {
+  const config = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      cache: "force-cache" 
+    },
+    body: JSON.stringify(body),
+  };
+  return fetchWithErrorHandling(API_URL + 'boundaries', config);
+}
+
 async function put(url, token, body) {
   const config = {
     method: 'PUT',

@@ -6,6 +6,25 @@ async function getPostcodeCoords() {
   centerMap(r);
 }
 
+async function loadBoundaries() {
+  const boundaries = await get(API_URL + 'boundaries');
+
+  var boundariesLayer = L.geoJSON(JSON.parse(boundaries),{
+    style: (feature) => {
+      return {
+        color: 'red',
+        weight: 2,
+        fillOpacity: 0.1
+      };
+    },
+    onEachFeature: function(feature, layer) {
+      layer.bindPopup(feature.properties.name);
+    }
+  });    
+                 
+  boundariesLayer.addTo(map);
+}
+
 function centerMap(r) {
 	if (r.success) {
 	L.marker([r.latitude, r.longitude]).addTo(map)
@@ -15,12 +34,23 @@ function centerMap(r) {
 	}
 }
 
-const map = L.map('map').setView([51.505, -0.09], 13);
+const map = L.map('map')
+
+
 const mapDiv = document.getElementById('map');
 
 const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 }).addTo(map);
+
+map.on('load', () => {
+  const location = JSON.parse(localStorage.getItem("location"));
+  const zoom = JSON.parse(localStorage.getItem("zoom"));
+  map.panTo(location);
+  map.setZoom(zoom);
+  loadBoundaries();
+});
+map.setView([51.505, -0.09], 13);
 
 // Define a boundary for the map to restrict panning
 var ukBounds = L.latLngBounds(
@@ -29,6 +59,13 @@ var ukBounds = L.latLngBounds(
 );
 
 map.setMaxBounds(ukBounds); // Restrict panning to the UK boundaries
-map.on('drag', function() {
+map.on('drag', (e) => {
     map.panInsideBounds(ukBounds, { animate: false });
 });
+
+map.on("dragend", (e) => {
+    localStorage.setItem("location", JSON.stringify(map.getCenter()));
+});
+map.on("zoomend", (e) => {
+    localStorage.setItem("zoom", JSON.stringify(map.getZoom()));
+})
