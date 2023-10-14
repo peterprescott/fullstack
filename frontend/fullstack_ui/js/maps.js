@@ -2,11 +2,16 @@ console.log('maps.js loading...');
 
 async function getPostcodeCoords() {
   const postcode = document.getElementById('postcode-input').value;
+  
   r = await get(API_URL + 'postcode/' + postcode);
+  console.log(r)
   churches = await get(API_URL + 'churches/' + postcode);
+
   count_churches = churches.length;
   church_msg = 'There are ' + count_churches + ' churches in ' +
-		churches[0].postcode.split(' ')[0] + '.<br>';
+		churches[0].postcode.split(' ')[0] + '.' + '\n' + 
+		'Income Score: ' + r.income_score + ' // Employment Score: ' + r.employment_score + ' // Crime Score: ' + r.crime_score + ' // Health Score: ' + r.health_score + ' // Education Score: ' + r.education_score + '.' ;
+
   msgFooter(church_msg)
 
 
