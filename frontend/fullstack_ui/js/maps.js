@@ -20,7 +20,6 @@ async function getPostcodeCoords() {
   centerMap(r);
 }
 
-
 async function toggleBoundaries() {
   const boundaries = document.getElementById("show-boundaries").checked;
   console.log(boundaries);
@@ -74,15 +73,6 @@ function centerMap(r) {
 	} else {
 		console.log(r);
 	}
-}
-
-function centerMap(r) {
-  if (r.success) {
-    L.marker([r.latitude, r.longitude]).addTo(map);
-    map.setView([r.latitude, r.longitude], 13);
-  } else {
-    console.log(r);
-  }
 }
 
 const map = L.map("map");
