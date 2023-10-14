@@ -5,7 +5,7 @@ async function getPostcodeCoords() {
   r = await get(API_URL + 'postcode/' + postcode);
   churches = await get(API_URL + 'churches/' + postcode);
   count_churches = churches.length;
-  church_msg = 'There are ' + count_churches + ' churches in ' + 
+  church_msg = 'There are ' + count_churches + ' churches in ' +
 		churches[0].postcode.split(' ')[0] + '.';
   msgFooter(church_msg)
 
@@ -25,7 +25,7 @@ function centerMap(r) {
 	if (r.success) {
 	let marker = L.marker([r.latitude, r.longitude]).addTo(map);
 	marker.bindPopup(r.postcode).openPopup();
-	
+
 	map.setView([r.latitude, r.longitude], 13);
 	} else {
 		console.log(r);
