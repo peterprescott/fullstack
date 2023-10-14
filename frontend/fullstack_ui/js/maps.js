@@ -3,20 +3,22 @@ console.log('maps.js loading...');
 async function getPostcodeCoords() {
   const postcode = document.getElementById('postcode-input').value;
   r = await get(API_URL + 'postcode/' + postcode);
-  centerMap(r);
   churches = await get(API_URL + 'churches/' + postcode);
+  count_churches = churches.length;
+  church_msg = 'There are ' + count_churches + ' churches in ' +
+		churches[0].postcode.split(' ')[0] + '.';
+  msgFooter(church_msg)
 
   churches.forEach(c => markChurch(c));
+
+  centerMap(r);
 }
 
 function markChurch(c) {
 	console.log(c);
-	// let icon = L.divIcon(
-	// 	{html: c.church_name}
-	// )
 	let marker = L.marker([c.latitude, c.longitude],
-		// {icon: icon}
 	).addTo(map);
+	marker.bindPopup(c.church_name).openPopup();
 }
 
 async function loadBoundaries() {
@@ -40,7 +42,9 @@ async function loadBoundaries() {
 
 function centerMap(r) {
 	if (r.success) {
-	L.marker([r.latitude, r.longitude]).addTo(map)
+	let marker = L.marker([r.latitude, r.longitude]).addTo(map);
+	marker.bindPopup(r.postcode).openPopup();
+
 	map.setView([r.latitude, r.longitude], 13);
 	} else {
 		console.log(r);
