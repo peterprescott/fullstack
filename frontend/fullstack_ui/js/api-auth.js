@@ -75,9 +75,8 @@ passwordConfirmInput.addEventListener('keyup', function(event) {
 
 
 function welcome(username) {
-  msgHeader(`Welcome, ${username}!`);
+  console.log(`Welcome, ${username}!`);
   authForm.style.display = 'none';
-  launchApp();
 }
 
 async function authRequest() {

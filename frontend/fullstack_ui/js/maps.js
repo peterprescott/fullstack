@@ -1,16 +1,25 @@
 console.log("maps.js loading...");
 
 async function getPostcodeCoords() {
-  const postcode = document.getElementById("postcode-input").value;
+  const postcode = document.getElementById('postcode-input').value;
 
   if (postcode.replace(" ", "").length < 5) {
     alert("Bro, you know that ain't a postcode");
     return;
   }
 
-  r = await get(API_URL + "postcode/" + postcode);
+  r = await get(API_URL + 'postcode/' + postcode);
+  churches = await get(API_URL + 'churches/' + postcode);
+  count_churches = churches.length;
+  church_msg = 'There are ' + count_churches + ' churches in ' +
+		churches[0].postcode.split(' ')[0] + '.';
+  msgFooter(church_msg)
+
+  churches.forEach(c => markChurch(c));
+
   centerMap(r);
 }
+
 
 async function toggleBoundaries() {
   const boundaries = document.getElementById("show-boundaries").checked;
@@ -20,6 +29,13 @@ async function toggleBoundaries() {
   } else {
     hideBoundaries();
   }
+}
+
+function markChurch(c) {
+	console.log(c);
+	let marker = L.marker([c.latitude, c.longitude],
+	).addTo(map);
+	marker.bindPopup(c.church_name).openPopup();
 }
 
 async function loadBoundaries() {
@@ -47,6 +63,17 @@ function hideBoundaries() {
       map.removeLayer(layer);
     }
   });
+}
+
+function centerMap(r) {
+	if (r.success) {
+	let marker = L.marker([r.latitude, r.longitude]).addTo(map);
+	marker.bindPopup(r.postcode).openPopup();
+
+	map.setView([r.latitude, r.longitude], 13);
+	} else {
+		console.log(r);
+	}
 }
 
 function centerMap(r) {

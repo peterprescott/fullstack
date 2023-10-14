@@ -27,11 +27,48 @@ from fullstack_api.models import User, db
 guard = Praetorian()
 
 
+def clean_postcode(postcode_str: str) -> str:
+    postcode = "".join(
+        [char.upper() for char in postcode_str if str.isalnum(char)]
+    )
+    return postcode
+
+
+def get_postcode(postcode: str) -> dict:
+    data = db.session.execute(
+        db.text(
+            f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
+        )
+    ).fetchone()
+    if data:
+        return {
+            "postcode": data.postcode,
+            "latitude": data.latitude,
+            "longitude": data.longitude,
+        }
+    else:
+        return {"postcode": None, "latitude": None, "longitude": None}
+
+
+class Churches(Resource):
+    def get(self, postcode_str):
+        postcode = clean_postcode(postcode_str)
+        postcode = get_postcode(postcode)["postcode"]
+        churches = pd.read_csv(data_dir / "church_dc.csv")
+        postcode_district_churches = churches[
+            churches["postcode"].apply(lambda x: str(x).split(" ")[0])
+            == postcode.split(" ")[0]
+        ]
+
+        churches_dict = postcode_district_churches.to_dict(
+            orient="records"
+        )
+        return churches_dict
+
+
 class Postcode(Resource):
     def get(self, postcode_str):
-        postcode = "".join(
-            [char.upper() for char in postcode_str if str.isalnum(char)]
-        )
+        postcode = clean_postcode(postcode_str)
         try:
             data = db.session.execute(
                 db.text(
@@ -47,6 +84,12 @@ class Postcode(Resource):
                 "postcode",
                 db.engine,
             )
+            data = db.session.execute(
+                db.text(
+                    f"SELECT * FROM postcode WHERE REPLACE(postcode, ' ','') = '{postcode}'"
+                )
+            ).fetchone()
+
         if data:
             return {
                 "success": True,
