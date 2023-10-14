@@ -10,3 +10,5 @@ package-lock.json
 # Python
 __pycache__
 *egg-info
+
+backend/fullstack_api/secret.py
