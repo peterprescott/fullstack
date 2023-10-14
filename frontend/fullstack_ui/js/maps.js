@@ -4,6 +4,19 @@ async function getPostcodeCoords() {
   const postcode = document.getElementById('postcode-input').value;
   r = await get(API_URL + 'postcode/' + postcode);
   centerMap(r);
+  churches = await get(API_URL + 'churches/' + postcode);
+
+  churches.forEach(c => markChurch(c));
+}
+
+function markChurch(c) {
+	console.log(c);
+	// let icon = L.divIcon(
+	// 	{html: c.church_name}
+	// )
+	let marker = L.marker([c.latitude, c.longitude],
+		// {icon: icon}
+	).addTo(map);
 }
 
 function centerMap(r) {
