@@ -6,7 +6,7 @@ var context = '';
 var launchApp = launchDataManager;
 
 if (window.location.hostname === 'localhost') {
-  API_URL = 'http://localhost:5000/';
+  API_URL = 'http://localhost:5001/';
   context = 'local';
   console.log('Running locally...');
 } else if (window.location.hostname.includes('test')) {

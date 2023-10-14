@@ -1,262 +1,3 @@
-/* Styling for Fullstack Frontend */
-
-:root {
-  --charcoal: #343434;
-  --grey: #d2d2d2;
-  --blue: #008cba;
-  --whitish: #faf5f4;
-  --green: #4caf50;
-  --red: #f44336;
-}
-
-body {
-  margin: 0;
-  background-color: var(--whitish);
-  font-family: Arial, sans-serif;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-}
-
-button {
-  border: none;
-  border-radius: 4px;
-  background-color: var(--blue);
-  cursor: pointer;
-  padding: 10px;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-/*
- * Map Styling
- */
-
-#map {
-  position: absolute;
-  top: 100px;
-  z-index: 1;
-  width: 100%;
-  height: 400px;
-}
-
-/*
- * Navbar Styling
- */
-
-nav {
-  display: flex;
-  position: fixed;
-  top: 0;
-  left: 0;
-  align-items: center;
-  z-index: 999;
-  background-color: var(--charcoal);
-  padding: 10px;
-  width: 100%;
-  height: 35px;
-  overflow: hidden;
-}
-
-nav h1 {
-  margin: 0;
-  color: var(--whitish);
-  font-size: 30px;
-  font-weight: 650;
-}
-
-/* End Navbar Styling */
-
-/* Footer Styling */
-
-footer {
-  display: flex;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--charcoal);
-  padding: 10px;
-  width: 100%;
-  height: 25px;
-  overflow: hidden;
-}
-
-footer span, footer a {
-  margin: 0;
-  color: var(--whitish);
-  font-size: 15px;
-}
-
-/* End Footer Styling */
-
-/* App Styling */
-
-#app {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  justify-content: center;
-  width: 100%;
-  height: 80%;
-}
-
-#app-header {
-  padding-top: 30px;
-  width: 100%;
-  text-align: center;
-  color: var(--blue);
-  font-size: 30px;
-}
-
-#app-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 100px;
-
-  /* justify-content: center; */
-  width: 100%;
-  min-height: 60vh;
-  overflow: auto;
-}
-
-#app-image {
-  display: flex;
-  width: 90%;
-}
-
-#app-footer {
-  position: fixed;
-  bottom: 45px;
-  align-items: center;
-  border-top: 1px solid var(--charcoal);
-  background-color: var(--grey);
-  width: 100%;
-  height: 90px;
-  text-align: center;
-}
-
-/* End App Styling */
-
-/* CRUD Styling */
-
-select {
-  border-radius: 5px;
-  background-color: var(--whitish);
-  padding: 10px;
-  width: 50vw;
-  max-width: 90%;
-  font-size: 18px;
-}
-
-option {
-  width: 100%;
-  overflow: hidden;
-}
-
-.table-div {
-  justify-content: center;
-  margin: 50px;
-  border: 1px solid var(--grey);
-  padding: 20px;
-  max-width: 90%;
-  overflow-x: auto;
-}
-
-.table-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-table {
-  margin: 0 auto;
-  padding: 10px;
-  width: 100%;
-  width: max-content;
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-
-td {
-  border-top: 1px solid var(--charcoal);
-  border-right: 0;
-  border-left: 0;
-  padding: 5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-tr:nth-child(even) {
-  background-color: #d2d2d2;
-}
-
-
-.add-button {
-  background-color: var(--green);
-}
-
-.edit-button {
-  background-color: var(--blue);
-  max-width: 8ch;
-}
-
-.save-button {
-  background-color: var(--green);
-  width: 8ch;
-}
-
-.delete-button {
-  background-color: var(--red);
-}
-
-/* End CRUD Styling */
-
-
-/*
- * Auth Styling
- */
-
-#auth-div {
-  display: flex;
-  position: absolute;
-  top: 10;
-  right: 40px;
-  align-items: center;
-  cursor: pointer;
-}
-
-#auth-icon {
-  display: inline-block;
-  flex-shrink: 0;
-  margin-right: 20px;
-  border-radius: 50%;
-  background-color: var(--whitish);
-  padding: 5px;
-  width: 30px;
-  height: 30px;
-  overflow: hidden;
-
-}
-
-#auth-top-button {
-  border: none;
-  border-radius: 4px;
-  background-color: var(--whitish);
-  cursor: pointer;
-  padding: 8px;
-  padding-right: 20px;
-  padding-left: 20px;
-  width: 200px;
-  vertical-align: middle;
-  color: var(--charcoal);
-  font-size: 20px;
-}
 
 #auth-form {
   display: none;
@@ -264,62 +5,20 @@ tr:nth-child(even) {
   top: 60px;
   right: 0;
   z-index: 1000;
-  border-radius: 5px;
+  /* border-radius: 5px;
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
   background-color: var(--whitish);
   padding: 10px;
   width: 350px;
-  max-width: 90%;
+  max-width: 90%; */
 }
-
-#auth-form input {
-  margin-bottom: 15px;
-  border: 1px solid var(--grey);
-  border-radius: 4px;
-  padding: 10px;
-  width: 90%;
-  font-size: 18px;
-}
-
-#auth-form button {
-  transition: background-color 0.3s;
-  margin: 15px auto;
-  border: none;
-  border-radius: 4px;
-  background-color: var(--blue);
-  cursor: pointer;
-  padding: 10px;
-  width: 100%;
-  color: var(--whitish);
-  font-size: 18px;
-}
-
-@media (width <= 600px) {
-  #auth-top-button{
-    display: none;
-  }
-}
-
-#auth-form-toggle {
-  cursor: pointer;
-  text-decoration: underline;
-  color: var(--blue);
-}
-
-#auth-form-toggle:hover {
-  opacity: 0.8;
-}
-
-
-
-/* End Auth Styling */
-
 
 /* Popup Styling */
 
 #overlay {
   display: none;
   position: fixed;
+  z-index: 99999;
   top: 0;
   left: 0;
   align-items: center;
@@ -330,6 +29,7 @@ tr:nth-child(even) {
 }
 
 #popup {
+  background-color: white;
   border-radius: 5px;
   box-shadow: 0 0 10px rgb(0 0 0 / 30%);
   background-color: var(--whitish);
@@ -351,4 +51,4 @@ tr:nth-child(even) {
   font-size: 18px;
 }
 
-/*  End Popup Styling  */
+ End Popup Styling  */

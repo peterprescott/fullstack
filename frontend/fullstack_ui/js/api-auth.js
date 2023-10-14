@@ -20,8 +20,8 @@ function authFormToggleHTML(mode) {
 }
 
 function toggleAuthForm() { authForm.style.display = (
-	authForm.style.display === 'inline-block') ? 'none' :
-		'inline-block'; }
+	authForm.style.display === 'inline-flex') ? 'none' :
+		'inline-flex'; }
 
 function renderLoginForm() {
 	usernameInput.style.display = 'inline-block';

@@ -13,6 +13,7 @@ disable the pylint warnings for missing docstrings.
 import os
 
 import pandas as pd
+import gzip
 from flask import request
 from flask_praetorian import Praetorian, auth_required, roles_required
 from flask_restful import Api, Resource
@@ -103,6 +104,11 @@ class Postcode(Resource):
                 "message": "Postcode not found",
             }
 
+class Boundaries(Resource):
+    def get(self):
+        with gzip.open(data_dir / "boundaries.geojson.gz", 'rt') as f:
+            file_content = f.read()
+            return file_content;
 
 class HelloWorld(Resource):
     def get(self):
